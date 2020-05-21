@@ -5,6 +5,7 @@
  * SDA - A4
  * SCL - A5
  * PWM - D9
+ * BUZZER - D7
  * 
 */
 
@@ -27,8 +28,9 @@ unsigned long previousMillis1 = 0;
 const long interval = 40000; 
 const long interval1 = 500;
 
-const int buttonPin = 11; 
-const int ledPin =  13;
+const int counter = 11; 
+const int led =  13;
+const int buzzer =  13;
 
 int buttonState = 0;
 int bt = 0;
@@ -40,11 +42,8 @@ unsigned long CR = 0;
 unsigned long cs;
 int sec;
 /////////////////////////////////
-
 float input_voltage = 0.0;
 float temp=0.0;
-
-
 ///////////////////////////////////
 
 Bounce bouncer = Bounce();
@@ -61,19 +60,19 @@ void setup() {
   delay(2000);
   lcd.clear();
 
-
 TCCR1A = TCCR1A & 0xe0 | 2;
 TCCR1B = TCCR1B & 0xe0 | 0x09; 
-analogWrite(9,22 ); // output 9 PWM = 10%
+analogWrite(9,22); // output 9 PWM = 10%
 
-pinMode(13, OUTPUT);
-pinMode(7, OUTPUT); // buzzer
+pinMode(led, OUTPUT);
+pinMode(buzzer, OUTPUT);
+digitalWrite(led, HIGH);
 digitalWrite(13, HIGH);
 
 
-pinMode(buttonPin, INPUT); // pulsante sul pin 2
-digitalWrite(buttonPin ,HIGH); // collegare la resistenza pull-up integrata
-bouncer.attach(buttonPin); // imposta il pulsante
+pinMode(counter, INPUT);
+digitalWrite(counter, HIGH); // Connect the integrated pull-up resistor 
+bouncer.attach(counter); // Set the pulse
 bouncer.interval(5); // Parameter, stable interval = 5 мс
 
 
@@ -87,9 +86,9 @@ void loop() {
  unsigned long currentMillis = millis();
  unsigned long currentMillis1 = millis();
 
-
+//Check if an event occured
 if (bouncer.update())
- { //se si è verificato un evento
+ { 
   if (bouncer.read()==0)
   { 
     bt++;
