@@ -1,0 +1,11 @@
+C:\Users\User\Dropbox\Projects\Radiation Logger\Radiation Logger\bin\Debug\Radiation Logger.exe.config
+C:\Users\User\Dropbox\Projects\Radiation Logger\Radiation Logger\bin\Debug\Radiation Logger.exe
+C:\Users\User\Dropbox\Projects\Radiation Logger\Radiation Logger\bin\Debug\Radiation Logger.pdb
+C:\Users\User\Dropbox\Projects\Radiation Logger\Radiation Logger\obj\x86\Debug\Radiation Logger.csprojResolveAssemblyReference.cache
+C:\Users\User\Dropbox\Projects\Radiation Logger\Radiation Logger\obj\x86\Debug\Radiation_Logger.ConnectionSettingsForm.resources
+C:\Users\User\Dropbox\Projects\Radiation Logger\Radiation Logger\obj\x86\Debug\Radiation_Logger.Main.resources
+C:\Users\User\Dropbox\Projects\Radiation Logger\Radiation Logger\obj\x86\Debug\Radiation_Logger.Properties.Resources.resources
+C:\Users\User\Dropbox\Projects\Radiation Logger\Radiation Logger\obj\x86\Debug\Radiation Logger.csproj.GenerateResource.Cache
+C:\Users\User\Dropbox\Projects\Radiation Logger\Radiation Logger\obj\x86\Debug\Radiation Logger.exe
+C:\Users\User\Dropbox\Projects\Radiation Logger\Radiation Logger\obj\x86\Debug\Radiation Logger.pdb
+C:\Users\Dima\Documents\Visual Studio 2010\Projects\Radiation Logger\Radiation Logger\bin\Debug\Radiation Logger.exe.config
