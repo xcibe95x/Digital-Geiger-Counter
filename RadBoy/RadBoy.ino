@@ -1,17 +1,5 @@
-#include <Bounce2.h>
-#include <SPI.h>
-#include <Wire.h>
-#include <LiquidCrystal_I2C.h>
-
-LiquidCrystal_I2C lcd(0x27, 16, 2);
-
-#define NUMFLAKES 10
-#define XPOS 0
-#define YPOS 1
-#define DELTAY 2
-
-// PINS SETUP
-/*
+/* PINS SETUP
+ *  
  * Voltmeter - A0
  * USB Voltmeter - A1
  * SDA - A4
@@ -20,17 +8,22 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
  * 
 */
 
-//#define RAD 2
-//#define BUZZER 7
-//#define BTN_1 10
-//#define BTN_2 11
-//#define BTN_3 12
+#include <Bounce2.h>
+#include <SPI.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
 
+// LCD Offsets, Remove or Replace with your LCD offsets/code aswell as libraries
+LiquidCrystal_I2C lcd(0x27, 16, 2); 
 
-//////////////////////////////////////////////////////////////////////////////
+#define NUMFLAKES 10
+#define XPOS 0
+#define YPOS 1
+#define DELTAY 2
 
-unsigned long previousMillis = 0; 
-unsigned long previousMillis1 = 0; 
+unsigned long previousMillis = 0;
+unsigned long previousMillis1 = 0;
+
 const long interval = 40000; 
 const long interval1 = 500;
 
