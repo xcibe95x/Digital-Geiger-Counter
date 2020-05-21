@@ -30,7 +30,7 @@ const long interval1 = 500;
 
 const int counter = 11; 
 const int led =  13;
-const int buzzer =  13;
+const int buzzer =  7;
 
 int buttonState = 0;
 int bt = 0;
@@ -124,13 +124,13 @@ if (bouncer.update())
 
 ////////////////////////////////////////////////////RADIATION ICON AND BUZZER/////////////////////////////////////////////////////////////
 if (s1 == 1){
-    digitalWrite(13, HIGH);
-    digitalWrite (7, HIGH); // buzzer ON
+    digitalWrite(led, 1);
+    digitalWrite(buzzer, 1);
 }
 else
 {
-    digitalWrite(13, LOW);
-    digitalWrite (7, LOW); // buzzer OFF
+    digitalWrite(led, 0);
+    digitalWrite (buzzer, 0);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  if (currentMillis1 - previousMillis1 >= interval1) {
