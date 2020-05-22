@@ -28,10 +28,11 @@ unsigned long previousMillis1 = 0;
 const long interval = 40000; 
 const long interval1 = 500;
 
-const int counter = 2; 
+const int counter = 11; // CURRENTLY  IN DEBUG (CHANGE IT TO 2 FOR TUBE)
 const int led =  13;
 const int buzzer =  7;
 
+int measuringUnit = 0;
 int buttonState = 0;
 int bt = 0;
 int pbt = 0;
@@ -110,12 +111,22 @@ if (bouncer.update())
     
 ///////////////////////////////////////////////TEXT ON DISPLAY//////////////////////////////////////////////////////////////////
 
+if (measuringUnit == 0) {
   lcd.setCursor(0,1);
   lcd.print(bt);
+  lcd.print(" CPM");
   lcd.setCursor(0,0);
   lcd.print(CR);
-  lcd.print(" ");
-  lcd.print("mR/hr");
+  lcd.print(" mR/hr");
+} else {
+  lcd.setCursor(0,1);
+  lcd.print(bt);
+  lcd.print(" CPM");
+  lcd.setCursor(0,0);
+  lcd.print(CR);
+  lcd.print(" uSv/hr");
+}
+
 
 /////////////////////////////////////////////////BATTERY  INDICATION////////////////////////////////////////////
   batterylevel(15,0);
@@ -139,7 +150,19 @@ else
       s1=0;
     }
   }
-  //display.display();
+  
+  if (digitalRead(12) == 1) {
+    if (measuringUnit == 0) {
+      measuringUnit = 1;
+      lcd.clear();
+      delay(100);
+    } else { 
+      measuringUnit = 0;
+      lcd.clear();
+      delay(100);
+    }
+  }
+  
 }
 
 // Draw battery level in position x,y
@@ -337,5 +360,5 @@ long readVcc() {
   result |= ADCH << 8;
   result = 1126400L / result; // Back-calculate AVcc in mV
   return result;
-}
+ }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
