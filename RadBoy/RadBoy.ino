@@ -29,7 +29,7 @@ enum tube {SBM20, SI29BG, SBM19, STS5, SI22G, SI3BG, SBM21, LND712, SBT9, SI1G};
 
 ///////////EASY CONFIGURATION//////////
 
-int installed_tube = SBM20; // Change with the Tube used in your Project
+int installed_tube = tube(SBM20); // Change with the Tube used in your Project
 
 
 //////////////////////////////////////
@@ -55,7 +55,6 @@ unsigned long CR = 0;
 
 unsigned long cs;
 int sec;
-
 /////////////////////////////////
 
 
@@ -64,7 +63,7 @@ Bounce bouncer = Bounce();
 void setup() {
   
  Serial.begin(9600); // Open Serial Port for Debug or External Tools
-
+ 
  // Calculate or find the factor value and add it here if your tube is different.
  switch (installed_tube) {
     case 0:   conversionFactor = 0.006315; break; //SBM20
@@ -72,23 +71,21 @@ void setup() {
     case 2:   conversionFactor = 0.001500; break; //SBM19
     case 3:    conversionFactor = 0.006666; break; //STS5
     case 4:   conversionFactor = 0.001714; break; //SI22G
-    case 5:   conversionFactor = 0.631578; break; //SBM21
-    case 6:   conversionFactor = 0.048000; break; //SI3BG
+    case 5:   conversionFactor = 0.631578; break; //SI3BG
+    case 6:   conversionFactor = 0.048000; break; //SBM21
     case 7:  conversionFactor = 0.005940; break; //LND712
     case 8:    conversionFactor = 0.010900; break; //SBT9
     case 9:    conversionFactor = 0.006000; break; //SI1G
-    default: 0;
+    default: break;
   }
-  
-  
+  Serial.println(10000*conversionFactor);
+
   //SPI.begin();
   lcd.init();
   lcd.backlight();
   lcd.clear();
   lcd.setCursor(0,0);  
   lcd.print("Geiger Counter");
-  lcd.setCursor(0,1);
-  lcd.print(conversionFactor);
   delay(5000);
   lcd.clear();
 
