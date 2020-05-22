@@ -52,7 +52,7 @@ If your tube is not in the list, you will need to findout the manufacter sheet, 
 Note: Own Background Radiation can also be called Inherent, Self or Shielded.
 You may or not use this information to remove some noise from the conversion to get a more accurate uSv/hr.
 
-|                |CONVERSION RATE                |OWN BACKGROUND RADIATION     |
+|                |CONVERSION FACTOR              |OWN BACKGROUND RADIATION     |
 |----------------|-------------------------------|-----------------------------|
 |SBM-20          |`'0.006315'`                   | 1 CPS = 60 CPM              |
 |SI29BG          |`'0.010000'`                   | Find tube datasheet         |

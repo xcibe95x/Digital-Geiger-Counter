@@ -1,3 +1,6 @@
+/* By youtube.com/xcibe95x */
+/* github.com/xcibe95x */
+
 /* PINS SETUP
  *  
  * Voltmeter - A0
@@ -14,21 +17,31 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
+// LCD Coords
+#define XPOS 0
+#define YPOS 1
+
 // LCD Offsets, Remove or Replace with your LCD offsets/code aswell as libraries
 LiquidCrystal_I2C lcd(0x27, 16, 2); 
 
-#define NUMFLAKES 10
-#define XPOS 0
-#define YPOS 1
-#define DELTAY 2
+//You can add a different tube name here and then add it's factor in the setup
+enum tube {SBM20, SI29BG, SBM19, STS5, SI22G, SI3BG, SBM21, LND712, SBT9, SI1G};
 
+///////////EASY CONFIGURATION//////////
+
+int installed_tube = SBM20; // Change with the Tube used in your Project
+
+
+//////////////////////////////////////
+
+float conversionFactor = 0;
 unsigned long previousMillis = 0;
 unsigned long previousMillis1 = 0;
 
 const long interval = 40000; 
 const long interval1 = 500;
 
-const int counter = 11; // CURRENTLY  IN DEBUG (CHANGE IT TO 2 FOR TUBE)
+const int counter = 10; // 11 (DEBUG) 2 (TUBE)
 const int led =  13;
 const int buzzer =  7;
 
@@ -42,23 +55,41 @@ unsigned long CR = 0;
 
 unsigned long cs;
 int sec;
+
 /////////////////////////////////
-float input_voltage = 0.0;
-float temp=0.0;
-///////////////////////////////////
+
 
 Bounce bouncer = Bounce();
 
 void setup() {
+  
+ Serial.begin(9600); // Open Serial Port for Debug or External Tools
 
-  //Serial.begin(9600);
+ // Calculate or find the factor value and add it here if your tube is different.
+ switch (installed_tube) {
+    case 0:   conversionFactor = 0.006315; break; //SBM20
+    case 1:  conversionFactor = 0.010000; break; //SI29BG
+    case 2:   conversionFactor = 0.001500; break; //SBM19
+    case 3:    conversionFactor = 0.006666; break; //STS5
+    case 4:   conversionFactor = 0.001714; break; //SI22G
+    case 5:   conversionFactor = 0.631578; break; //SBM21
+    case 6:   conversionFactor = 0.048000; break; //SI3BG
+    case 7:  conversionFactor = 0.005940; break; //LND712
+    case 8:    conversionFactor = 0.010900; break; //SBT9
+    case 9:    conversionFactor = 0.006000; break; //SI1G
+    default: 0;
+  }
+  
+  
   //SPI.begin();
   lcd.init();
   lcd.backlight();
   lcd.clear();
   lcd.setCursor(0,0);  
-  lcd.print("RadBoy ☢");
-  delay(2000);
+  lcd.print("Geiger Counter");
+  lcd.setCursor(0,1);
+  lcd.print(conversionFactor);
+  delay(5000);
   lcd.clear();
 
 TCCR1A = TCCR1A & 0xe0 | 2;
@@ -76,7 +107,9 @@ digitalWrite(counter, HIGH); // Connect the integrated pull-up resistor
 bouncer.attach(counter); // Set the pulse
 bouncer.interval(5); // Parameter, stable interval = 5 мс
 
-
+ 
+  
+  
 }
 
 void loop() {
