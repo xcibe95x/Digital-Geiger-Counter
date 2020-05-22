@@ -51,7 +51,7 @@ int bt = 0;
 int pbt = 0;
 int s1 = 0;
 unsigned long j;
-unsigned long CR = 0;
+float CR = 0.00;
 
 unsigned long cs;
 int sec;
@@ -128,7 +128,7 @@ if (bouncer.update())
   if (currentMillis - previousMillis >= interval) {
     previousMillis = currentMillis;
     lcd.clear();
-    CR = bt;
+    CR = bt*conversionFactor;
     bt = 0;   
   }
   
@@ -143,17 +143,17 @@ if (bouncer.update())
 if (measuringUnit == 0) {
   lcd.setCursor(0,1);
   lcd.print(bt);
-  lcd.print(" CPM");
+  lcd.print(" CPS");
   lcd.setCursor(0,0);
   lcd.print(CR);
-  lcd.print(" mR/hr");
+  lcd.print(" uSv/hr");
 } else {
   lcd.setCursor(0,1);
   lcd.print(bt);
   lcd.print(" CPM");
   lcd.setCursor(0,0);
   lcd.print(CR);
-  lcd.print(" uSv/hr");
+  lcd.print(" mR/hr");
 }
 
 
