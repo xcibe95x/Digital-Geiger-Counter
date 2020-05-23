@@ -123,20 +123,20 @@ if (bouncer.update())
  { 
   if (bouncer.read()==0)
   { 
-    bt++;
+    countPerSecond++;
   }
 }
 
   if (currentMillis - previousMillis >= interval) {
     previousMillis = currentMillis;
     lcd.clear();
-    microSievert = bt*conversionFactor;
-    bt = 0;   
+    microSievert = countPerSecond*conversionFactor;
+    countPerSecond = 0;   
   }
   
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  if (bt != pbt) {
-    pbt = bt;
+  if (countPerSecond != pbt) {
+    pbt = countPerSecond;
     s1 = 1;
 }
     
