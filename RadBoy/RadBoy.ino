@@ -144,17 +144,17 @@ if (bouncer.update())
 
 if (measuringUnit == 0) {
   lcd.setCursor(0,1);
-  lcd.print(bt);
+  lcd.print(countPerSecond);
   lcd.print(" CPS");
   lcd.setCursor(0,0);
   lcd.print(microSievert, 3);
   lcd.print(" uSv/hr");
 } else {
   lcd.setCursor(0,1);
-  lcd.print(bt);
+  lcd.print(countPerSecond);
   lcd.print(" CPM");
   lcd.setCursor(0,0);
-  lcd.print(microSievert);
+  lcd.print(milliRoentgen);
   lcd.print(" mR/hr");
 }
 
