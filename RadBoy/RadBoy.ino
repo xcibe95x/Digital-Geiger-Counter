@@ -31,10 +31,9 @@ enum tube {SBM20, SI29BG, SBM19, STS5, SI22G, SI3BG, SBM21, LND712, SBT9, SI1G};
 
 int installed_tube = tube(SBM20); // Change with the Tube used in your Project
 
-
 //////////////////////////////////////
 
-float conversionFactor = 0;
+
 unsigned long previousMillis = 0;
 unsigned long previousMillis1 = 0;
 
@@ -47,14 +46,17 @@ const int buzzer =  7;
 
 int measuringUnit = 0;
 int buttonState = 0;
-int bt = 0;
+
+int countPerSecond = 0;
+int countPerMinute = 0;
+float conversionFactor = 0;
+float microSievert = 0;
+float milliRoentgen = 0;
+
 int pbt = 0;
 int s1 = 0;
-unsigned long j;
-float CR = 0.00;
 
-unsigned long cs;
-int sec;
+
 /////////////////////////////////
 
 
@@ -128,7 +130,7 @@ if (bouncer.update())
   if (currentMillis - previousMillis >= interval) {
     previousMillis = currentMillis;
     lcd.clear();
-    CR = bt*conversionFactor;
+    microSievert = bt*conversionFactor;
     bt = 0;   
   }
   
@@ -145,14 +147,14 @@ if (measuringUnit == 0) {
   lcd.print(bt);
   lcd.print(" CPS");
   lcd.setCursor(0,0);
-  lcd.print(CR);
+  lcd.print(microSievert, 3);
   lcd.print(" uSv/hr");
 } else {
   lcd.setCursor(0,1);
   lcd.print(bt);
   lcd.print(" CPM");
   lcd.setCursor(0,0);
-  lcd.print(CR);
+  lcd.print(microSievert);
   lcd.print(" mR/hr");
 }
 
