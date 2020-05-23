@@ -12,6 +12,8 @@
  * 
 */
 
+// CONVERSION IS NOT CORRECT STILL SINCE I HAVE TO USE THE CPM INSTEAD OF THE CPS.
+
 #include <Bounce2.h>
 #include <SPI.h>
 #include <Wire.h>
