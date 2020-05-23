@@ -118,6 +118,8 @@ void loop() {
  unsigned long currentMillis = millis();
  unsigned long currentMillis1 = millis();
 
+milliRoentgen = microSievert/10;
+ 
 //Check if an event occured
 if (bouncer.update())
  { 
