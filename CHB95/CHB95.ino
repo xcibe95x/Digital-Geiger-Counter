@@ -119,61 +119,62 @@ void setup() {
 
 void loop() {
 
+ // Keep track of Arduino internal timer
  unsigned long currentMillis = millis();
  unsigned long currentMillis1 = millis();
 
-  milliRoentgen = microSievert/10;
+ // Conversions
+ milliRoentgen = microSievert/10; // uSv/hr -> mR/hr (10uSv/hr == 1mR/hr)
  
-  // Each 1sec reset the clicks
+ // Each Second Print & Reset the CPS 
   if (currentMillis - previousMillis >= 1000) {
     previousMillis = currentMillis;
     cpm = cps*60.0;
     microSievert = cpm*conversionFactor;
 
-    lcd.clear();
-    Serial.print("CPS:");
-    Serial.println(cps, 2);
-    Serial.print("CPM:");
-    Serial.println(cpm);
-    Serial.print("uSv/hr");
-    Serial.println(microSievert);
-    Serial.println();
-if (measuringUnit == 0) {
-  lcd.setCursor(0,0);
-  lcd.print(cpm);
-  lcd.print(" CPM");
-  lcd.setCursor(0,1);
-  lcd.print(microSievert, 2);
-  lcd.print(" uSv/hr");
-} else {
-  lcd.setCursor(0,0);
-  lcd.print(cpm);
-  lcd.print(" CPM");
-  lcd.setCursor(0,1);
-  lcd.print(milliRoentgen);
-  lcd.print(" mR/hr");
+   // Print CPM to Serial for External Tools
+   Serial.print("CPM:");
+   Serial.println(cpm);
+    
+ if (measuringUnit == 0) {
+   lcd.clear();
+   lcd.setCursor(0,0);
+   lcd.print(cpm);
+   lcd.print(" CPM");
+   lcd.setCursor(0,1);
+   lcd.print(microSievert, 2);
+   lcd.print(" uSv/hr");
+ } else {
+   lcd.clear();
+   lcd.setCursor(0,0);
+   lcd.print(cpm);
+   lcd.print(" CPM");
+   lcd.setCursor(0,1);
+   lcd.print(milliRoentgen);
+   lcd.print(" mR/hr");
+ }
+  cps = 0;  
 }
-     cps = 0;  
-  }
     
 /////////////////////////////////////////////////INDICATORS////////////////////////////////////////////
+
   batterylevel(15,0);
   usbplug(14,0);
   
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  
+
+  // Push Buttons Functions
   if (digitalRead(12) == 1) {
     if (measuringUnit == 0) {
       measuringUnit = 1;
       lcd.clear();
-      delay(100);
+      delay(50);
     } else { 
       measuringUnit = 0;
       lcd.clear();
-      delay(100);
-    }
-  }
+      delay(50);
+    }}
   
 }
 
