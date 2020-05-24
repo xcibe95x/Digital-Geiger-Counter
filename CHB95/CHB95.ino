@@ -12,8 +12,6 @@
  * 
 */
 
-// CONVERSION IS NOT CORRECT STILL SINCE I HAVE TO USE THE CPM INSTEAD OF THE CPS.
-
 #include <SPI.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
@@ -56,9 +54,6 @@ float conversionFactor = 0.0;
 float microSievert = 0.0;
 float milliRoentgen = 0.0;
 
-int pbt = 0;
-int s1 = 0;
-
 
 /////////////////////////////////
 
@@ -90,8 +85,10 @@ void setup() {
   lcd.backlight();
   lcd.clear();
   lcd.setCursor(0,0);  
-  lcd.print("Geiger Counter");
-  delay(5000);
+  lcd.print("CHB95 - v0.6");
+  lcd.setCursor(0,1);  
+  lcd.print("Youtube/xcibe95x");
+  delay(2000);
   lcd.clear();
 
 TCCR1A = TCCR1A & 0xe0 | 2;
@@ -126,8 +123,6 @@ void loop() {
     microSievert = cpm*conversionFactor;
 
     lcd.clear();
-    Serial.print("Clicks:");
-    Serial.println(clicks);
     Serial.print("CPS:");
     Serial.println(cps, 2);
     Serial.print("CPM:");
@@ -140,7 +135,7 @@ if (measuringUnit == 0) {
   lcd.print(cpm);
   lcd.print(" CPM");
   lcd.setCursor(0,1);
-  lcd.print(microSievert, 3);
+  lcd.print(microSievert, 2);
   lcd.print(" uSv/hr");
 } else {
   lcd.setCursor(0,0);
@@ -152,35 +147,12 @@ if (measuringUnit == 0) {
 }
      cps = 0;  
   }
-  
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  if (cps != pbt) {
-    pbt = cps;
-    s1 = 1;
-}
     
 /////////////////////////////////////////////////BATTERY  INDICATION////////////////////////////////////////////
   batterylevel(15,0);
   usbplug(14,0);
-  
-
-////////////////////////////////////////////////////RADIATION ICON AND BUZZER/////////////////////////////////////////////////////////////
-if (s1 == 1){
-    digitalWrite(led, 1);
-    digitalWrite(buzzer, 1);
-}
-else
-{
-    digitalWrite(led, 0);
-    digitalWrite (buzzer, 0);
-}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- if (currentMillis1 - previousMillis1 >= interval1) {
-    previousMillis1 = currentMillis1;    
-    if (s1 == 1){
-      s1=0;
-    }
-  }
+
   
   if (digitalRead(12) == 1) {
     if (measuringUnit == 0) {
@@ -394,9 +366,14 @@ long readVcc() {
  }
 
  void triggerGeiger() {
-    cps++;                          
-  digitalWrite(7,HIGH);
-  delay(1);
-  digitalWrite(7,LOW);
+   if(previousMillis1 != millis()){
+        cps++; 
+        digitalWrite(7, 1);
+        delay(1);
+        digitalWrite(7, 0);
+    //time = millis()-previousMillis;
+    previousMillis1 = millis();
+   }
+                         
+
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
