@@ -63,12 +63,23 @@ void setup() {
  // LCD Prints
  lcd.setCursor(0,0);  
  lcd.print("CHB95");
-  lcd.setCursor(11,0);  
+ lcd.setCursor(11,0);  
  lcd.print("v0.6");
  lcd.setCursor(0,1);  
  lcd.print("Geiger Counter");
  delay(1500);
  lcd.clear();
+
+
+ // Pin Setups
+  pinMode(led, OUTPUT);
+  pinMode(buzzer, OUTPUT);
+
+ // PWM = 10% Output(9) Stuff
+  digitalWrite(13, 1); // PWM
+  TCCR1A = TCCR1A & 0xe0 | 2;
+  TCCR1B = TCCR1B & 0xe0 | 0x09; 
+  analogWrite(9,22);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -98,10 +109,6 @@ void setup() {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // Pin Setups
-  pinMode(led, OUTPUT);
-  pinMode(buzzer, OUTPUT);
-
   // More LCD Prints
   lcd.setCursor(0,0);  
   lcd.print("Software Updates:");
@@ -109,11 +116,6 @@ void setup() {
   lcd.print("github/xcibe95x");
   delay(1000);
   lcd.clear();
-  
-  // PWM = 10% Output(D9) Stuff
-  TCCR1A = TCCR1A & 0xe0 | 2;
-  TCCR1B = TCCR1B & 0xe0 | 0x09; 
-  analogWrite(9,22);
   
 }
 
@@ -378,10 +380,11 @@ long readVcc() {
  void triggerGeiger() {
    if(previousMillis1 != millis()){
         cps++; 
-        digitalWrite(7, 1);
+        digitalWrite(buzzer, 1);
+        digitalWrite(led, 1);
         delay(1);
-        digitalWrite(7, 0);
-    //time = millis()-previousMillis;
+        digitalWrite(buzzer, 0);
+        digitalWrite(led, 1);
     previousMillis1 = millis();
    }
                          
