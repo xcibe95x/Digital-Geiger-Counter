@@ -31,7 +31,7 @@ enum tube {SBM20, SI29BG, SBM19, STS5, SI22G, SI3BG, SBM21, LND712, SBT9, SI1G};
 
 //////////////////////////////////////
 //////////////////////////////////////
-///////////EASY CONFIGURATION//////////
+//////////EASY CONFIGURATION//////////
 
 int installed_tube = tube(SI3BG); // Change with the Tube used in your Project
 
@@ -51,11 +51,12 @@ const int buzzer =  7;
 int measuringUnit = 0;
 int buttonState = 0;
 
-unsigned long int countPerSecond = 0;
-unsigned long int countPerMinute = 0;
-float conversionFactor = 0;
-float microSievert = 0;
-float milliRoentgen = 0;
+float clicks = 0.0; // Clicks
+float cps = 0.0; // Clicks Per Second
+unsigned long int cpm = 0; // Click Per Minute
+float conversionFactor = 0.0;
+float microSievert = 0.0;
+float milliRoentgen = 0.0;
 
 int pbt = 0;
 int s1 = 0;
@@ -69,20 +70,22 @@ void setup() {
  Serial.begin(9600); // Open Serial Port for Debug or External Tools
  
  // Calculate or find the factor value and add it here if your tube is different.
+ // Doing your own calculations and calibrations may make your geiger counter more accurate
  switch (installed_tube) {
     case 0:   conversionFactor = 0.006315; break; //SBM20
     case 1:  conversionFactor = 0.010000; break; //SI29BG
     case 2:   conversionFactor = 0.001500; break; //SBM19
     case 3:    conversionFactor = 0.006666; break; //STS5
     case 4:   conversionFactor = 0.001714; break; //SI22G
-    case 5:   conversionFactor = 0.631578; break; //SI3BG
+    case 5: conversionFactor = 0.194; break; //SI3BG Use this for now as a factor, i will update later on in case.
+    //case 5: conversionFactor = 0.044444; break; //SI3BG
+    //case 5:   conversionFactor = 0.631578; break; //SI3BG
     case 6:   conversionFactor = 0.048000; break; //SBM21
     case 7:  conversionFactor = 0.005940; break; //LND712
     case 8:    conversionFactor = 0.010900; break; //SBT9
     case 9:    conversionFactor = 0.006000; break; //SI1G
     default: break;
   }
-  Serial.println(10000*conversionFactor);
 
   //SPI.begin();
   lcd.init();
@@ -112,47 +115,53 @@ attachInterrupt(digitalPinToInterrupt(GEIGER), triggerGeiger, FALLING);
 }
 
 void loop() {
-  
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
  unsigned long currentMillis = millis();
  unsigned long currentMillis1 = millis();
 
   milliRoentgen = microSievert/10;
-
-  if (currentMillis - previousMillis >= interval) {
+ 
+  // Each 2sec reset the clicks
+  if (currentMillis - previousMillis >= 2000) {
     previousMillis = currentMillis;
-    lcd.clear();
-    countPerMinute = countPerSecond*60;
-    microSievert = countPerMinute*conversionFactor;
-    countPerSecond = 0;   
-  }
-  
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  if (countPerSecond != pbt) {
-    pbt = countPerSecond;
-    s1 = 1;
-}
-    
-///////////////////////////////////////////////TEXT ON DISPLAY//////////////////////////////////////////////////////////////////
+    cps = clicks/2.0;
+    cpm = cps*60.0;
+    microSievert = cpm*conversionFactor;
 
+    lcd.clear();
+    Serial.print("Clicks:");
+    Serial.println(clicks);
+    Serial.print("CPS:");
+    Serial.println(cps, 2);
+    Serial.print("CPM:");
+    Serial.println(cpm);
+    Serial.print("uSv/hr");
+    Serial.println(microSievert);
+    Serial.println();
 if (measuringUnit == 0) {
   lcd.setCursor(0,0);
-  lcd.print(countPerMinute);
+  lcd.print(cpm);
   lcd.print(" CPM");
   lcd.setCursor(0,1);
   lcd.print(microSievert, 3);
   lcd.print(" uSv/hr");
 } else {
   lcd.setCursor(0,0);
-  lcd.print(countPerMinute);
+  lcd.print(cpm);
   lcd.print(" CPM");
   lcd.setCursor(0,1);
   lcd.print(milliRoentgen);
   lcd.print(" mR/hr");
 }
-
-
+     clicks = 0;  
+  }
+  
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  if (cps != pbt) {
+    pbt = cps;
+    s1 = 1;
+}
+    
 /////////////////////////////////////////////////BATTERY  INDICATION////////////////////////////////////////////
   batterylevel(15,0);
   usbplug(14,0);
@@ -388,7 +397,8 @@ long readVcc() {
  }
 
  void triggerGeiger() {
-   countPerSecond++;
+    clicks++;
+  
   digitalWrite(7,HIGH);
   delay(1);
   digitalWrite(7,LOW);
