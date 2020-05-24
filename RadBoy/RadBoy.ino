@@ -50,8 +50,6 @@ const int buzzer =  7;
 
 int measuringUnit = 0;
 int buttonState = 0;
-
-float clicks = 0.0; // Clicks
 float cps = 0.0; // Clicks Per Second
 unsigned long int cpm = 0; // Click Per Minute
 float conversionFactor = 0.0;
@@ -121,10 +119,9 @@ void loop() {
 
   milliRoentgen = microSievert/10;
  
-  // Each 2sec reset the clicks
-  if (currentMillis - previousMillis >= 2000) {
+  // Each 1sec reset the clicks
+  if (currentMillis - previousMillis >= 1000) {
     previousMillis = currentMillis;
-    cps = clicks/2.0;
     cpm = cps*60.0;
     microSievert = cpm*conversionFactor;
 
@@ -397,8 +394,7 @@ long readVcc() {
  }
 
  void triggerGeiger() {
-    clicks++;
-  
+    cps++;                          
   digitalWrite(7,HIGH);
   delay(1);
   digitalWrite(7,LOW);
