@@ -1,3 +1,11 @@
+// CONFIGURATION
+//////////////////////////////////////////////////////////////////////////////////
+//You can add a different tubes name here and then add it's factor in the setup
+enum tube {SBM20, SI29BG, SBM19, STS5, SI22G, SI3BG, SBM21, LND712, SBT9, SI1G};
+
+int installed_tube = tube(SI3BG); // Change with the Tube used in your Project
+//////////////////////////////////////////////////////////////////////////////////
+
 /* By youtube.com/xcibe95x */
 /* github.com/xcibe95x */
 
@@ -12,31 +20,17 @@
  * 
 */
 
+//Libraries
 #include <SPI.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
-// LCD Coords
-#define XPOS 0
-#define YPOS 1
-#define GEIGER 2
+#define XPOS 0 // LCD X Position
+#define YPOS 1 // LCD Y Position
+#define GEIGER 2 // Geiger-Muller Tube Pulse input
 
-// LCD Offsets, Remove or Replace with your LCD offsets/code aswell as libraries
-LiquidCrystal_I2C lcd(0x27, 16, 2); 
-
-//You can add a different tube name here and then add it's factor in the setup
-enum tube {SBM20, SI29BG, SBM19, STS5, SI22G, SI3BG, SBM21, LND712, SBT9, SI1G};
-
-//////////////////////////////////////
-//////////////////////////////////////
-//////////EASY CONFIGURATION//////////
-
-int installed_tube = tube(SI3BG); // Change with the Tube used in your Project
-
-//////////////////////////////////////
-//////////////////////////////////////
-//////////////////////////////////////
-
+// LCD Offsets, Remove or Replace with your LCD offsets/code aswell as libraries n stuff
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 unsigned long previousMillis = 0;
 unsigned long previousMillis1 = 0;
@@ -60,52 +54,68 @@ float milliRoentgen = 0.0;
 
 void setup() {
   
+ //SPI.begin();
  Serial.begin(9600); // Open Serial Port for Debug or External Tools
+ 
+ // Initialize LCD
+ lcd.init();
+ lcd.clear();
+ lcd.backlight();
+
+ // LCD Prints
+ lcd.setCursor(0,0);  
+ lcd.print("CHB95");
+  lcd.setCursor(11,0);  
+ lcd.print("v0.6");
+ lcd.setCursor(0,1);  
+ lcd.print("Geiger Counter");
+ delay(1500);
+ lcd.clear();
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ // TUBE CONFIGURATION
  
  // Calculate or find the factor value and add it here if your tube is different.
  // Doing your own calculations and calibrations may make your geiger counter more accurate
+ // I will only correct values for SBM-20 and SI3BG, feel free to push values for other tubes.
  switch (installed_tube) {
     case 0:   conversionFactor = 0.006315; break; //SBM20
     case 1:  conversionFactor = 0.010000; break; //SI29BG
     case 2:   conversionFactor = 0.001500; break; //SBM19
     case 3:    conversionFactor = 0.006666; break; //STS5
     case 4:   conversionFactor = 0.001714; break; //SI22G
-    case 5: conversionFactor = 0.194; break; //SI3BG Use this for now as a factor, i will update later on in case.
-    //case 5: conversionFactor = 0.044444; break; //SI3BG
-    //case 5:   conversionFactor = 0.631578; break; //SI3BG
+    case 5: conversionFactor = 0.194; break; //SI3BG Use this for now as a factor, i will update after i compare with SBM-20.
+    //case 5: conversionFactor = 0.044444; break; //SI3BG Attempt to correct it too low uSv/hr?
+    //case 5:   conversionFactor = 0.631578; break; //SI3BG that one give crazy uSv/hr
     case 6:   conversionFactor = 0.048000; break; //SBM21
     case 7:  conversionFactor = 0.005940; break; //LND712
     case 8:    conversionFactor = 0.010900; break; //SBT9
     case 9:    conversionFactor = 0.006000; break; //SI1G
     default: break;
-  }
+ }
 
-  //SPI.begin();
-  lcd.init();
-  lcd.backlight();
-  lcd.clear();
+ pinMode(GEIGER, INPUT_PULLUP);
+ attachInterrupt(digitalPinToInterrupt(GEIGER), triggerGeiger, FALLING);
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // Pin Setups
+  pinMode(led, OUTPUT);
+  pinMode(buzzer, OUTPUT);
+
+  // More LCD Prints
   lcd.setCursor(0,0);  
-  lcd.print("CHB95 - v0.6");
+  lcd.print("Software Updates:");
   lcd.setCursor(0,1);  
-  lcd.print("Youtube/xcibe95x");
-  delay(2000);
+  lcd.print("github/xcibe95x");
+  delay(1000);
   lcd.clear();
-
-TCCR1A = TCCR1A & 0xe0 | 2;
-TCCR1B = TCCR1B & 0xe0 | 0x09; 
-analogWrite(9,22); // output 9 PWM = 10%
-
-pinMode(led, OUTPUT);
-pinMode(buzzer, OUTPUT);
-digitalWrite(led, HIGH);
-digitalWrite(13, HIGH);
-
-
-pinMode(GEIGER, INPUT_PULLUP);
-attachInterrupt(digitalPinToInterrupt(GEIGER), triggerGeiger, FALLING);
-
- 
   
+  // PWM = 10% Output(D9) Stuff
+  TCCR1A = TCCR1A & 0xe0 | 2;
+  TCCR1B = TCCR1B & 0xe0 | 0x09; 
+  analogWrite(9,22);
   
 }
 
@@ -148,10 +158,11 @@ if (measuringUnit == 0) {
      cps = 0;  
   }
     
-/////////////////////////////////////////////////BATTERY  INDICATION////////////////////////////////////////////
+/////////////////////////////////////////////////INDICATORS////////////////////////////////////////////
   batterylevel(15,0);
   usbplug(14,0);
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
   
   if (digitalRead(12) == 1) {
