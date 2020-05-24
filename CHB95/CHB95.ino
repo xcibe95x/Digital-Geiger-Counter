@@ -35,8 +35,6 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 unsigned long previousMillis = 0;
 unsigned long previousMillis1 = 0;
 
-const long interval = 1000; 
-const long interval1 = 500;
 const int led =  13;
 const int buzzer =  7;
 
