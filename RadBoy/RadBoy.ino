@@ -14,7 +14,6 @@
 
 // CONVERSION IS NOT CORRECT STILL SINCE I HAVE TO USE THE CPM INSTEAD OF THE CPS.
 
-#include <Bounce2.h>
 #include <SPI.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
@@ -22,6 +21,7 @@
 // LCD Coords
 #define XPOS 0
 #define YPOS 1
+#define GEIGER 2
 
 // LCD Offsets, Remove or Replace with your LCD offsets/code aswell as libraries
 LiquidCrystal_I2C lcd(0x27, 16, 2); 
@@ -29,28 +29,30 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 //You can add a different tube name here and then add it's factor in the setup
 enum tube {SBM20, SI29BG, SBM19, STS5, SI22G, SI3BG, SBM21, LND712, SBT9, SI1G};
 
+//////////////////////////////////////
+//////////////////////////////////////
 ///////////EASY CONFIGURATION//////////
 
-int installed_tube = tube(SBM20); // Change with the Tube used in your Project
+int installed_tube = tube(SI3BG); // Change with the Tube used in your Project
 
+//////////////////////////////////////
+//////////////////////////////////////
 //////////////////////////////////////
 
 
 unsigned long previousMillis = 0;
 unsigned long previousMillis1 = 0;
 
-const long interval = 40000; 
+const long interval = 1000; 
 const long interval1 = 500;
-
-const int counter = 10; // 11 (DEBUG) 2 (TUBE)
 const int led =  13;
 const int buzzer =  7;
 
 int measuringUnit = 0;
 int buttonState = 0;
 
-int countPerSecond = 0;
-int countPerMinute = 0;
+unsigned long int countPerSecond = 0;
+unsigned long int countPerMinute = 0;
 float conversionFactor = 0;
 float microSievert = 0;
 float milliRoentgen = 0;
@@ -61,8 +63,6 @@ int s1 = 0;
 
 /////////////////////////////////
 
-
-Bounce bouncer = Bounce();
 
 void setup() {
   
@@ -103,10 +103,8 @@ digitalWrite(led, HIGH);
 digitalWrite(13, HIGH);
 
 
-pinMode(counter, INPUT);
-digitalWrite(counter, HIGH); // Connect the integrated pull-up resistor 
-bouncer.attach(counter); // Set the pulse
-bouncer.interval(5); // Parameter, stable interval = 5 мс
+pinMode(GEIGER, INPUT_PULLUP);
+attachInterrupt(digitalPinToInterrupt(GEIGER), triggerGeiger, FALLING);
 
  
   
@@ -120,21 +118,13 @@ void loop() {
  unsigned long currentMillis = millis();
  unsigned long currentMillis1 = millis();
 
-milliRoentgen = microSievert/10;
- 
-//Check if an event occured
-if (bouncer.update())
- { 
-  if (bouncer.read()==0)
-  { 
-    countPerSecond++;
-  }
-}
+  milliRoentgen = microSievert/10;
 
   if (currentMillis - previousMillis >= interval) {
     previousMillis = currentMillis;
     lcd.clear();
-    microSievert = countPerSecond*conversionFactor;
+    countPerMinute = countPerSecond*60;
+    microSievert = countPerMinute*conversionFactor;
     countPerSecond = 0;   
   }
   
@@ -147,17 +137,17 @@ if (bouncer.update())
 ///////////////////////////////////////////////TEXT ON DISPLAY//////////////////////////////////////////////////////////////////
 
 if (measuringUnit == 0) {
-  lcd.setCursor(0,1);
-  lcd.print(countPerSecond);
-  lcd.print(" CPS");
   lcd.setCursor(0,0);
+  lcd.print(countPerMinute);
+  lcd.print(" CPM");
+  lcd.setCursor(0,1);
   lcd.print(microSievert, 3);
   lcd.print(" uSv/hr");
 } else {
-  lcd.setCursor(0,1);
-  lcd.print(countPerSecond);
-  lcd.print(" CPM");
   lcd.setCursor(0,0);
+  lcd.print(countPerMinute);
+  lcd.print(" CPM");
+  lcd.setCursor(0,1);
   lcd.print(milliRoentgen);
   lcd.print(" mR/hr");
 }
@@ -396,4 +386,11 @@ long readVcc() {
   result = 1126400L / result; // Back-calculate AVcc in mV
   return result;
  }
+
+ void triggerGeiger() {
+   countPerSecond++;
+  digitalWrite(7,HIGH);
+  delay(1);
+  digitalWrite(7,LOW);
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
