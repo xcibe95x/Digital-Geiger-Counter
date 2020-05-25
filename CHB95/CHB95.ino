@@ -38,6 +38,7 @@ unsigned long previousMillis1 = 0;
 const int led =  13;
 const int buzzer =  7;
 
+int impulse = 0;
 int measuringUnit = 0;
 int buttonState = 0;
 float cps = 0.0; // Clicks Per Second
@@ -70,16 +71,10 @@ void setup() {
  delay(1500);
  lcd.clear();
 
-
  // Pin Setups
-  pinMode(led, OUTPUT);
   pinMode(buzzer, OUTPUT);
+  pinMode(led, OUTPUT);
 
- // PWM = 10% Output(9) Stuff
-  digitalWrite(13, 1); // PWM
-  TCCR1A = TCCR1A & 0xe0 | 2;
-  TCCR1B = TCCR1B & 0xe0 | 0x09; 
-  analogWrite(9,22);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -109,6 +104,12 @@ void setup() {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+ // PWM = 10% Output(9) Stuff
+ //digitalWrite(13, 1); // PWM
+  TCCR1A = TCCR1A & 0xe0 | 2;
+  TCCR1B = TCCR1B & 0xe0 | 0x09; 
+  analogWrite(9,22);
+  
   // More LCD Prints
   lcd.setCursor(0,0);  
   lcd.print("Software Updates:");
@@ -127,6 +128,14 @@ void loop() {
 
  // Conversions
  milliRoentgen = microSievert/10; // uSv/hr -> mR/hr (10uSv/hr == 1mR/hr)
+
+if (impulse == 1) {
+    digitalWrite(led, 1);
+    delay(1);
+    impulse = 0;
+} else {
+        digitalWrite(led, 0);
+}
  
  // Each Second Print & Reset the CPS 
   if (currentMillis - previousMillis >= 1000) {
@@ -177,8 +186,21 @@ void loop() {
       lcd.clear();
       delay(50);
     }}
+
+
   
 }
+
+ void triggerGeiger() {
+   if(previousMillis1 != millis()){
+        cps++;
+        digitalWrite(buzzer, 1);
+        impulse=1;
+        delay(1);
+        digitalWrite(buzzer, 0);
+    previousMillis1 = millis();
+   }
+ }
 
 // Draw battery level in position x,y
 void batterylevel(int xpos,int ypos)
@@ -362,31 +384,4 @@ void usbplug(int xpos,int ypos)
     lcd.write(byte(1));
   }
 }
-
-// Read internal voltage (Not Used so far)
-long readVcc() {
-  long result;
-  // Read 1.1V reference against AVcc
-  ADMUX = _BV(REFS0) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
-  delay(2); // Wait for Vref to settle
-  ADCSRA |= _BV(ADSC); // Convert
-  while (bit_is_set(ADCSRA, ADSC));
-  result = ADCL;
-  result |= ADCH << 8;
-  result = 1126400L / result; // Back-calculate AVcc in mV
-  return result;
- }
-
- void triggerGeiger() {
-   if(previousMillis1 != millis()){
-        cps++; 
-        digitalWrite(buzzer, 1);
-        digitalWrite(led, 1);
-        delay(1);
-        digitalWrite(buzzer, 0);
-        digitalWrite(led, 1);
-    previousMillis1 = millis();
-   }
-                         
-
-}
+                        
