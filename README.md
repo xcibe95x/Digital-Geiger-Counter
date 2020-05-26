@@ -5,7 +5,7 @@
     Electronics 98% Done
     Code 21% Done.
 
-
+## Due to problems with the SI3BG Tube, i will wait the SBM-20 to continue on developing this, there will be no more support to the SI3BG, i will focus on SBM-20 and add factors for other tubes aswell. you can adjust them yourself after.
 
 > IMPORTANT: This is still in progress and Schematics are not yet avaialable, i will add them soon, take any information here confidential and not 100% Accurate. As of now i already builded the Counter but it does not count since i have an Insensitive Tube and i'm waiting for my SBM-20 to arrive safe and sound.
 > Meanwhile i'm still working on fixing the code and make it readable by debugghing it with a button at the moment. Will add more informations and videos by the time being

@@ -53,7 +53,7 @@ float milliRoentgen = 0.0;
 
 void setup() {
   
- //SPI.begin();
+ SPI.begin();
  Serial.begin(9600); // Open Serial Port for Debug or External Tools
  
  // Initialize LCD
@@ -74,7 +74,6 @@ void setup() {
  // Pin Setups
   pinMode(buzzer, OUTPUT);
   pinMode(led, OUTPUT);
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -105,7 +104,7 @@ void setup() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
  // PWM = 10% Output(9) Stuff
- //digitalWrite(13, 1); // PWM
+  digitalWrite(13, 1); // PWM
   TCCR1A = TCCR1A & 0xe0 | 2;
   TCCR1B = TCCR1B & 0xe0 | 0x09; 
   analogWrite(9,22);
