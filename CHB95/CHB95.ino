@@ -153,7 +153,7 @@ if (impulse == 1) {
    lcd.print(" CPM");
    lcd.setCursor(0,1);
    lcd.print(microSievert, 2);
-   lcd.print(" uSv/hr");
+   lcd.print(" \344Sv/hr");
  } else {
    lcd.clear();
    lcd.setCursor(0,0);
