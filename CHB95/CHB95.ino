@@ -3,7 +3,7 @@
 //You can add a different tubes name here and then add it's factor in the setup
 enum tube {SBM20, SI29BG, SBM19, STS5, SI22G, SI3BG, SBM21, LND712, SBT9, SI1G};
 
-int installed_tube = tube(SI3BG); // Change with the Tube used in your Project
+int installed_tube = tube(SBM20); // Change with the Tube used in your Project
 //////////////////////////////////////////////////////////////////////////////////
 
 /* By youtube.com/xcibe95x */
@@ -11,8 +11,8 @@ int installed_tube = tube(SI3BG); // Change with the Tube used in your Project
 
 /* PINS SETUP
  *  
- * Voltmeter - A0
- * USB Voltmeter - A1
+ * Voltmeter - A1
+ * USB Voltmeter - A6
  * SDA - A4
  * SCL - A5
  * PWM - D9
@@ -27,7 +27,7 @@ int installed_tube = tube(SI3BG); // Change with the Tube used in your Project
 
 #define XPOS 0 // LCD X Position
 #define YPOS 1 // LCD Y Position
-#define GEIGER 2 // Geiger-Muller Tube Pulse input
+#define GEIGER 3 // Geiger-Muller Tube Pulse input
 
 // LCD Offsets, Remove or Replace with your LCD offsets/code aswell as libraries n stuff
 LiquidCrystal_I2C lcd(0x27, 16, 2);
@@ -35,7 +35,7 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 unsigned long previousMillis = 0;
 unsigned long previousMillis1 = 0;
 
-const int led =  13;
+const int led =  2;
 const int buzzer =  7;
 
 int impulse = 0;
@@ -65,7 +65,7 @@ void setup() {
  lcd.setCursor(0,0);  
  lcd.print("CHB95");
  lcd.setCursor(11,0);  
- lcd.print("v0.6");
+ lcd.print("Rev1");
  lcd.setCursor(0,1);  
  lcd.print("Geiger Counter");
  delay(1500);
@@ -98,7 +98,6 @@ void setup() {
     default: break;
  }
 
- pinMode(GEIGER, INPUT_PULLUP);
  attachInterrupt(digitalPinToInterrupt(GEIGER), triggerGeiger, FALLING);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -151,9 +150,12 @@ if (impulse == 1) {
    lcd.setCursor(0,0);
    lcd.print(cpm);
    lcd.print(" CPM");
+   lcd.setCursor(8,0);
+   lcd.print(cps);
+   lcd.print(" CPS");
    lcd.setCursor(0,1);
    lcd.print(microSievert, 2);
-   lcd.print(" \344Sv/hr");
+   lcd.print(" uSv/hr");
  } else {
    lcd.clear();
    lcd.setCursor(0,0);
