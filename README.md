@@ -45,6 +45,14 @@ That said, i will try to adjust this geiger counter accordingly.
  - SBM-20 Geiger Tube (Initially SI3BG, but does not count anything or go in avalanche)
  - 1x Recycled headphones jack to connect headphones
  - 2x Recycled fuse base to hold the tube (makes it easy to replace)
+ 
+ ## Changelog
+  # Rev.1
+  - Initial Release / Experimentation
+  
+  # Rev.2
+  - Code Rescripted and Fixed
+
 
 ## What if my tube is not on the list?
 
