@@ -56,20 +56,21 @@ That said, i will try to adjust this geiger counter accordingly.
 
 ## What if my tube is not on the list?
 
-If your tube is not in the list, you will need to findout the manufacter sheet, and find the Conversion Factor, if you don't find it you will to calculate the Conversion Factor yourself, you may try to ask to the seller of the tube itself, or around the forums if someone has the same tube and know the conversion factor, or can manage to calculate it for you.
+If your tube is not in the list, you will need to findout the manufacter sheet, and find the Conversion Factor, if you don't find it you will need to calculate the Conversion Factor yourself, you may try to ask to the seller of the tube itself, or around the forums if someone has the same tube and know the conversion factor, or can manage to calculate it for you.
 
+# Other Informations
 Note: Own Background Radiation can also be called Inherent, Self or Shielded.
 You may or not use this information to remove some noise from the conversion to get a more accurate uSv/hr.
 
 |                |CONVERSION FACTOR              |OWN BACKGROUND RADIATION     |
 |----------------|-------------------------------|-----------------------------|
 |SBM-20          |`'0.006315'`                   | 1 CPS = 60 CPM              |
-|SI29BG          |`'0.010000'`                   | Find tube datasheet         |
+|SI29BG          |`'0.010000'`                   |                             |
 |SBM19           |`'0.001500'`                   | 1,83 CPS = 109,8 CPM        |
 |STS5            |`'0.006666'`                   | Similiar to SBM-20 ??       |
-|SI22G           |`'0.001714'`                   | Find tube datasheet         |
+|SI22G           |`'0.001714'`                   |                             |
 |SI3BG           |`'0.631578'`                   | 0,2 CPS = 12 CPM            |
-|SBM21           |`'0.048000'`                   | Find tube datasheet         |
-|LND712          |`'0.005940'`                   | Find tube datasheet         |
-|SBT9            |`'0.010900'`                   | Find tube datasheet         |
-|SI1G            |`'0.006000'`                   | Find tube datasheet         |
+|SBM21           |`'0.048000'`                   |                             |
+|LND712          |`'0.005940'`                   |                             |
+|SBT9            |`'0.010900'`                   |                             |
+|SI1G            |`'0.006000'`                   |                             |
