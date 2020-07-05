@@ -1,22 +1,13 @@
 # Easy DIY Geiger Counter (Work in Progress) 
 
-   Current Progress of the Project
- 
-    Electronics 98% Done
-    Code 21% Done.
+## This counter is now inspired by Imagesco GCA-06W Design and Functioning
 
-## 27/06/2020 UPDATE, The tube had some delay but is arriving soon now, i will continue developing this really soon.
+## Consider getting yourself a cheap SBM-20 and don't waste money on the SI3BG
 
-## Due to problems with the SI3BG Tube, i will wait the SBM-20 to continue on developing this, there will be no more support to the SI3BG, i will focus on SBM-20 and add factors for other tubes aswell. you can adjust them yourself after.
+> IMPORTANT: This is still in progress and Schematics are not yet avaialable, i will add them soon, take any information here confidential and not 100% Accurate. I will keep updating the source and i already fixed a lot of bugs.
 
-> IMPORTANT: This is still in progress and Schematics are not yet avaialable, i will add them soon, take any information here confidential and not 100% Accurate. As of now i already builded the Counter but it does not count since i have an Insensitive Tube and i'm waiting for my SBM-20 to arrive safe and sound.
-> Meanwhile i'm still working on fixing the code and make it readable by debugghing it with a button at the moment. Will add more informations and videos by the time being
-
-> **SI3BG§** Readings are strange and there is not much information on this tube, and also it's insensitive, despite it still managed to give me some click for background radiation, i think this tube get a lot of interference from light or such idk. also harder to make it work for unexperienced people in electronics.
-> Consider getting yourself an SBM-20 for a bit more money.
-
-I have always wanted to have a **Geiger Counter** to check if some things in the garage or around the house that lay here from many years, has some activity, but as you know they are expensive and if you are not gonna use it in a professional way or going in a trip to a radioactive area, there's no use in spending all this money, after some researches online, it opened to me a little bit of roads, this geiger counter is based on the one seen on [**How to Do**](https://www.youtube.com/channel/UCLiMtiFkJY6VrFH7K7Yobhw) channel, now i have some basics in electronics and coding, but i have a small understanding of Radiation, so i have been researching to gain some knowledge to make my geiger counter as accurate as possible, this project has same basics and almost same components on the one seen on How to Do Channel, but as it seems on his channel there is a lot of confusion, where people asking for different tubes, conversion to micro sievert and such, also, his counter seems to just copycat the CPS to the mR/hr giving an extremely incorrect reading? (I think?) i'm focusing on uSv/hr since they are easier and convert them later for now, the goal of this project is to make a really easy and customizable code and schematics accessibile to anyone even with 0 comprension of coding electronics and stuff. Hope it will be helpful.
-
+I have always wanted to have a **Geiger Counter** to check if some things in the garage or around the house that lay here from many years, has some activity, but as you know they are expensive and if you are not gonna use it in a professional way or going in a trip to a radioactive area, there's no use in spending all this money, after some researches online, it opened to me a little bit of roads, this geiger counter is based on the one seen on [**How to Do**](https://www.youtube.com/channel/UCLiMtiFkJY6VrFH7K7Yobhw) channel, now i have some basics in electronics and coding, but i have a small understanding of Radiation, so i have been researching to gain some knowledge to make my geiger counter as accurate as possible, this project has same basics and almost same components on the one seen on How to Do Channel, but as it seems on his channel there is a lot of confusion, where people asking for different tubes, conversion to micro sievert and such, also, his counter seems to just copycat the CPS to the mR/hr giving an incorrect reading? there is no conversion done, i'm focusing on uSv/hr since they are easier and convert them later for now, the goal of this project is to make a really easy and customizable code and schematics accessibile to anyone even with minimal understanding of coding electronics and stuff. Hope it will be helpful.
+And if it was, please support me by subscribing on my youtube channel!
 
 ## Why do you think this is gonna work and what makes it accurate?
 
@@ -29,7 +20,7 @@ Also notice that the code will be adjusted for this SBM-20 in particular wich is
 But i will add easy support for a bunch of tubes.
 That said, i will try to adjust this geiger counter accordingly.
 
-## Useful Links
+## Some documentations
 
 [2N3904 Datasheets and Equivalents](https://components101.com/2n3904-pinout-datasheet)
 [SBM-20 Manufacter Datasheets](http://www.gstube.com/data/2398/)
@@ -41,8 +32,9 @@ That said, i will try to adjust this geiger counter accordingly.
  - Arduino Nano
  - 16x2 I2C (LCD)
  - 2N3904 Transistor
- - 10M Ohm Resistor
- - Around 6, 10K Resistors
+ - 4.7M Ohm Resistor
+ - 4x 100K Ohm Resistors
+ - A bunch of 10K Resistors
  - 16v 100uF Capacitor
  - 470 pF Capacitor
  - DC-DC Converter 5v to 1200v (Aliexpress, find a good seller got scammed a lot on this.)
@@ -50,7 +42,9 @@ That said, i will try to adjust this geiger counter accordingly.
  - 1x Switch button for ON/OFF
  - 3x Push Buttons for the functions
  - 1x Led
- - SBM-20 Geiger Tube (Initially SI3BG, but does not count anything, too insensitive)
+ - SBM-20 Geiger Tube (Initially SI3BG, but does not count anything or go in avalanche)
+ - 1x Recycled headphones jack to connect headphones
+ - 2x Recycled fuse base to hold the tube (makes it easy to replace)
 
 ## What if my tube is not on the list?
 
