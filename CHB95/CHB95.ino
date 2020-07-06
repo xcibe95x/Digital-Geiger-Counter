@@ -11,11 +11,14 @@ int installed_tube = tube(SBM20); // Change with the Tube used in your Project
 
 // A4 SDA LCD
 // A5 SCL LCD
-const int led =  2;      // D2 INDICATOR LED
-const int buzzer = 7;    // D7 INDICATOR BUZZER  
-const int PWM = 9;       // D9 PWM
-const int volt = A1;     // Voltmeter for Battery
-const int usbV = A6;     // Voltmeter for USB Port
+const int led =  2;        // D2 INDICATOR LED
+const int buzzer = 7;      // D7 INDICATOR BUZZER 
+const int left_btn = 10;   // D10 BUTTON
+const int mid_btn = 11;    // D11 BUTTON
+const int right_btn = 12;  // D12 BUTTON
+const int PWM = 9;         // D9 PWM
+const int volt = A1;       // Voltmeter for Battery
+const int usbV = A6;       // Voltmeter for USB Port
 
 // Strings
 String stCPS = " CPS";
@@ -34,14 +37,16 @@ String mR = " mR/hr";
 #define XPOS 0 // LCD X Position
 #define YPOS 1 // LCD Y Position
 #define GEIGER_PIN 3 // Geiger-Muller Tube Impulse input
-#define LOG_PERIOD 20000 // Period before refreshing values (in milliseconds)
-#define DISP_PERIOD 5000
+#define LOG_PERIOD 20000 // Period before refreshing values (in milliseconds) recommended value 15000-60000
 #define MINUTE_PERIOD 60000 // 1 Minute (in milliseconds)
+#define ALARM_THRESHOLD 0 
+#define DEBOUNCE_TIMEOUT 50
 
 // LCD Offsets, Remove or Replace with your LCD offsets/code aswell as libraries n stuff
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 int trigger;
+long int lastDebounceTime;
 
 unsigned long CPM; // Counts per minute
 unsigned long CPS; // Counts per second
@@ -123,6 +128,9 @@ void setup() {
  // Pin Setups (Buttons will be configured later)
  pinMode(buzzer, OUTPUT);
  pinMode(led, OUTPUT);
+ pinMode(left_btn, INPUT);
+ pinMode(mid_btn, INPUT);
+ pinMode(right_btn, INPUT);
  pinMode(GEIGER_PIN, INPUT);
  attachInterrupt(digitalPinToInterrupt(GEIGER_PIN), IMPULSE, FALLING);
 
