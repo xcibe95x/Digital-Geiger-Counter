@@ -1,5 +1,7 @@
 # Easy DIY Geiger Counter (Work in Progress) 
 
+## The Repository is not dead, it's just in Queue i have so many other things to do, and i also ordered a new sample to do better test.
+
 ## This counter is now inspired by Imagesco GCA-06W Design and Functioning
 
 ## Consider getting yourself a cheap SBM-20 and don't waste money on the SI3BG
