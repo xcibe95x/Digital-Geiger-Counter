@@ -1,6 +1,6 @@
-# Easy DIY Geiger Counter (Work in Progress) 
+# Easy DIY Geiger Counter (Work in Progress) 29/12/2020 Update Read Below
 
-## The Repository is not dead, it's just in Queue i have so many other things to do, and i also ordered a new sample to do better test.
+## The Repository is not dead!, i have little time to things, but i'm starting to get back on this project, since the one i made was woring but a little bit problematic on some sides and the tube was not so sensible, i'm now working to get the projected 3D Printed by a friend, i will make the circuit all over again and fix the problems and interfences in the Geiger Counter, by doing this i will use a brand new arduino nano, so i'm sure it's not shorted and before doing anything i will test on an arduino UNO. I will update this repository again as i get some good result and also make a video on Youtube i will document anything i do and make a simple circuit for anyone to replicate! Have a nice day and i can't wait to bring in your Hands a Cheap and Advanced Geiger Counter that anyone can contribute to make it Better and Better just by using an Arduino Board and a few components you can find online Very cheap, i will also evaluate the final price of the Project. Since i started this project is now probably almost an Year i got some more knowledge of electronics and i will apply them to the circuit and fix my precend mistakes. Also i will do a few experiment and try a different capacitor and transistor. See you in the near future with the Final Project that i hope to present at my Exams for a few more credits  all well documented.
 
 ## This counter is now inspired by Imagesco GCA-06W Design and Functioning
 
