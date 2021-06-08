@@ -1,14 +1,16 @@
-# Easy DIY Geiger Counter (Work in Progress) 29/12/2020 Update Read Below
+# Easy DIY Geiger Counter
 
-## The Repository is not dead!, i have little time to things, but i'm starting to get back on this project, since the one i made was woring but a little bit problematic on some sides and the tube was not so sensible, i'm now working to get the projected 3D Printed by a friend, i will make the circuit all over again and fix the problems and interfences in the Geiger Counter, by doing this i will use a brand new arduino nano, so i'm sure it's not shorted and before doing anything i will test on an arduino UNO. I will update this repository again as i get some good result and also make a video on Youtube i will document anything i do and make a simple circuit for anyone to replicate! Have a nice day and i can't wait to bring in your Hands a Cheap and Advanced Geiger Counter that anyone can contribute to make it Better and Better just by using an Arduino Board and a few components you can find online Very cheap, i will also evaluate the final price of the Project. Since i started this project is now probably almost an Year i got some more knowledge of electronics and i will apply them to the circuit and fix my precend mistakes. Also i will do a few experiment and try a different capacitor and transistor. See you in the near future with the Final Project that i hope to present at my Exams for a few more credits  all well documented.
+# 08-06-2021 - I'm bringing this project for my exams and the repository will be updated with some schematics and photos of the project, i've beeen running this challenge to get my self a geiger counter for a year now, and i'm pretty statisfied with the end result, after all the prototypes and tests, the version i was able to make and bring to my exams is the one which brings me the most statisfaction. So i will be proud to update this repository by the end of the month or a bit later with schematics and images.
 
-## This counter is now inspired by Imagesco GCA-06W Design and Functioning
+Consider some of the informations below outdated, as it's been a year not updating them.
+
+## This counter is now inspired by Imagesco GCA-07W Design and Functioning
 
 ## Consider getting yourself a cheap SBM-20 and don't waste money on the SI3BG
 
 > IMPORTANT: This is still in progress and Schematics are not yet avaialable, i will add them soon, take any information here confidential and not 100% Accurate. I will keep updating the source and i already fixed a lot of bugs.
 
-I have always wanted to have a **Geiger Counter** to check if some things in the garage or around the house that lay here from many years, has some activity, but as you know they are expensive and if you are not gonna use it in a professional way or going in a trip to a radioactive area, there's no use in spending all this money, after some researches online, it opened to me a little bit of roads, this geiger counter is based on the one seen on [**How to Do**](https://www.youtube.com/channel/UCLiMtiFkJY6VrFH7K7Yobhw) channel, now i have some basics in electronics and coding, but i have a small understanding of Radiation, so i have been researching to gain some knowledge to make my geiger counter as accurate as possible, this project has same basics and almost same components on the one seen on How to Do Channel, but as it seems on his channel there is a lot of confusion, where people asking for different tubes, conversion to micro sievert and such, also, his counter seems to just copycat the CPS to the mR/hr giving an incorrect reading? there is no conversion done, i'm focusing on uSv/hr since they are easier and convert them later for now, the goal of this project is to make a really easy and customizable code and schematics accessibile to anyone even with minimal understanding of coding electronics and stuff. Hope it will be helpful.
+I have always wanted to have a **Geiger Counter** to check if some things in the garage or around the house that lay here from many years, has some activity, but as you know they are expensive and if you are not gonna use it in a professional way or going in a trip to a radioactive area, there's no use in spending all this money, after some researches online, it opened to me a few ways, after trial and error i was able to make a functioning geiger counter, however i have some basics in electronics and coding, but i have a small understanding of Radiation, so i have been researching to gain some knowledge to make my geiger counter as accurate as possible, the detection circuit is based on the most basic one you can find anywhere, but ofcourse i changed  it a bit, the goal of this project is to make a really easy and customizable code and schematics accessibile to anyone even with minimal understanding of coding electronics and stuff. Hope it will be helpful.
 And if it was, please support me by subscribing on my youtube channel!
 
 ## Why do you think this is gonna work and what makes it accurate?
@@ -16,10 +18,10 @@ And if it was, please support me by subscribing on my youtube channel!
 **Don't take any of my words for granted.** 
 But i'm purely optimistic that this will be as accurate as an actual Geiger Counter Using the same SBM-20 Tube.
 I have been googling around, and i did a bit of the math necessary, the Conversion Factor for this Tube given by the manufacter is 0,0057. Wich is given by doing some math with the values in the datasheet, and is not accurate you would need to redo the math with more tested elements, and than remove own background radiation of the tube itself, long story short, you would get a Conversion Factor of 0.005777.
-So i managed to obtain a list of Conversion Factors for different tube, in wich the SBM-20 is 0.006315
-Wich looks legit to me, so i will be using this for now. 
+So i managed to obtain a list of Conversion Factors for different tubes, in which the SBM-20 is 0.006315
+Wich is more legit, than i made my own calibration and conversion factor, wich should be accurate, i did the test with Americium 241. 
 Also notice that the code will be adjusted for this SBM-20 in particular wich is also the most common Tube.
-But i will add easy support for a bunch of tubes.
+But i will add some easy support for a bunch of tubes, but don't take it as accurate.
 That said, i will try to adjust this geiger counter accordingly.
 
 ## Some documentations
@@ -33,8 +35,8 @@ That said, i will try to adjust this geiger counter accordingly.
 
  - Arduino Nano
  - 16x2 I2C (LCD)
- - 2N3904 Transistor
- - 4.7M Ohm Resistor
+ - 3x 2N3904 Transistor
+ - 2x 4.7M Ohm Resistor
  - 4x 100K Ohm Resistors
  - A bunch of 10K Resistors
  - 16v 100uF Capacitor
@@ -49,16 +51,14 @@ That said, i will try to adjust this geiger counter accordingly.
  - 2x Recycled fuse base to hold the tube (makes it easy to replace)
  
  ## Changelog
-  # Rev.1
-  - Initial Release / Experimentation
-  
-  # Rev.2
-  - Code Rescripted and Fixed
+ 
+ # 2.0
+ - The previous code was completely changed so the changelog has been reset, any changes will be listed here.
 
 
 ## What if my tube is not on the list?
 
-If your tube is not in the list, you will need to findout the manufacter sheet, and find the Conversion Factor, if you don't find it you will need to calculate the Conversion Factor yourself, you may try to ask to the seller of the tube itself, or around the forums if someone has the same tube and know the conversion factor, or can manage to calculate it for you.
+If your tube is not in the list, you will need to findout the manufacter sheet (Usually some russian papersheet), and find the Conversion Factor, if you don't find it you will need to calculate the Conversion Factor yourself, you may try to ask to the seller of the tube itself, or around the forums if someone has the same tube and know the conversion factor, or can manage to calculate it for you.
 
 # Other Informations
 Note: Own Background Radiation can also be called Inherent, Self or Shielded.
