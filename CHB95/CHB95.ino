@@ -1,110 +1,88 @@
-/* Made and Scripted by Youtube.com/xcibe95x */
-/* Please consider to stop by and drop a subscribe to support me <3 */
-/* github.com/xcibe95x */
+/* Mauro Leoci 2021 */
+/* Made and Scripted by https://youtube.com/xcibe95x */
+/* The Project is open sourced and all updates are found on github */
+/* https://github.com/xcibe95x */
 
-// QUICK CONFIGURATION
-//////////////////////////////////////////////////////////////////////////////////
-           //0    //1     //2    //3   //4    //5    //6    //7     //8   //9
-enum tube {SBM20, SI29BG, SBM19, STS5, SI22G, SI3BG, SBM21, LND712, SBT9, SI1G}; // Add your tube name here and in the Setup
-
-int installed_tube = tube(SBM20); // Change with the Tube used in your Project
-
-// A4 SDA LCD
-// A5 SCL LCD
-const int led =  2;        // D2 INDICATOR LED
-const int buzzer = 7;      // D7 INDICATOR BUZZER 
-const int left_btn = 10;   // D10 BUTTON
-const int mid_btn = 11;    // D11 BUTTON
-const int right_btn = 12;  // D12 BUTTON
-const int PWM = 9;         // D9 PWM
-const int volt = A1;       // Voltmeter for Battery
-const int usbV = A6;       // Voltmeter for USB Port
-
-// Strings
-String stCPS = " CPS";
-String stCPM = " CPM";
-String uSv = " \344Sv/hr";
-String mSv = " mSv/hr";
-String mR = " mR/hr";
-
-//////////////////////////////////////////////////////////////////////////////////
-
-// Libraries
+// Included Libraries
 #include <SPI.h>
 #include <LiquidCrystal_I2C.h>
-#include <Wire.h>
 
-#define XPOS 0 // LCD X Position
-#define YPOS 1 // LCD Y Position
-#define GEIGER_PIN 3 // Geiger-Muller Tube Impulse input
-#define LOG_PERIOD 20000 // Period before refreshing values (in milliseconds) recommended value 15000-60000
-#define MINUTE_PERIOD 60000 // 1 Minute (in milliseconds)
-#define ALARM_THRESHOLD 0 
-#define DEBOUNCE_TIMEOUT 50
-
-// LCD Offsets, Remove or Replace with your LCD offsets/code aswell as libraries n stuff
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
-int trigger;
-long int lastDebounceTime;
+// Definitions
+#define LOG_PERIOD 5000 // Refresh period in milli-Seconds
 
-unsigned long CPM; // Counts per minute
-unsigned long CPS; // Counts per second
-unsigned long counts; // Geiger Muller Tube Activity
-unsigned long previousMillis = 0; // Time Measuring;
+#define gm_input 2    // Pin D2 Recieve radiation pulse
+#define SwDoseUnit 3  // Pin D3 Dose
+#define SwCPM 4       // Pin D5 Count Per Minute
+#define SwCPS 5       // Pin D4 Count Per Second
+#define SwBgLight 6   // Pin D6 Light Switch
+#define Clicker 7     // Pin D7 Buzzer
+#define PulseLed 8    // Pin D8 Pulse Led
+#define BatteryLed 9  // Pin D9 Battery Warning Led
+#define Battery 0     // Pin A0 Input Battery Voltage
 
+// Variables
+
+int readIndex =-1;
+int avgTotal;
+int avgFinal;
 float conversionFactor;
-float CPMArray[100];
 
-// Units
-float microSieverts;
-float milliSieverts;
-float milliRoentgens;
+// Geiger Tubes
+//////////////////////////////////////////////////////////////////////////////////
+           //0    //1     //2    //3   //4    //5    //6    //7     //8   //9
+enum tube {SBM20, SI29BG, SBM19, STS5, SI22G, SI3BG, SBM21, LND712, SBT9, SI1G};
+int installed_tube = tube(SBM20); // Current Tube Model
 
-/////////////////////////////////
 
-void IMPULSE() {
-  counts++;
-  trigger = 1;
-}
+// Variables for ISR.
+long interruptTime = 0;     // Time for a new Interrupt.
+long lastInterrupt = 0;     // Time when last Interrupt occured.
+long bouncePreventTime = 4; // Minimum allowed time between interrupts.
+
+// Variables for radiation count.
+unsigned int count = 0;          // Counts used in ISR
+unsigned int countPerSecond = 0; // Counts per second (CPS).
+unsigned int countPerMinute = 0; // Counts per minute (CPM).
+
+long timePreviousLog = 0;    // Time for previous CPS reading.
 
 float outputSieverts(float x)  {
   float y = x * conversionFactor;
   return y;
 }
 
-// SETUP
-
 void setup() {
+  
+  Serial.begin(9600);
+  lcd.init();
 
- // Initalize ports
- SPI.begin();
- Serial.begin(9600); // Open Serial Port for Debug or External Tools
+  // Pin Initalizations
+  pinMode(SwDoseUnit, INPUT_PULLUP); // Enable pullup resistor to keep the switch input
+  pinMode(SwCPS, INPUT_PULLUP);
+  pinMode(SwCPM, INPUT_PULLUP);
+  pinMode(SwBgLight, INPUT_PULLUP);
+  pinMode(gm_input, INPUT);
+  pinMode(BatteryLed, OUTPUT);
+  pinMode(Clicker, OUTPUT);
+  
+  digitalWrite(BatteryLed, HIGH);
+  
+  //digitalWrite(PulseLed, HIGH);
+  digitalWrite(Clicker, HIGH); // Set high as normal mode
 
- // Initialize LCD
- lcd.init();
- lcd.clear();
- lcd.backlight();
+  // Attaches ISP to gm_inpt pin.
+  // When pulse is detected ISR countPulse is initiated.
+  attachInterrupt(digitalPinToInterrupt(gm_input), countPulse, FALLING);
 
- // LCD Prints
- lcd.setCursor(0,0);  
- lcd.print("CHB-95");
- lcd.setCursor(10,0);  
- lcd.print("Rev.2C");
- lcd.setCursor(0,1);  
- lcd.print("Geiger Counter");
- delay(1500);
- lcd.clear();
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/////////////////////////////////////// TUBE CONFIGURATION //////////////////////////////////////////
+  ////////////////////////////////////// Tubes Factors //////////////////////////////////////////
  
  // Calculate or find the factor value and add it here if your tube is different.
  // Doing your own calculations and calibrations may make your geiger counter more accurate
  // I will only correct values for SBM-20
  switch (installed_tube) {
-    case 0: conversionFactor = 0.006655; break; //SBM20 My Calibration
+    case 0: conversionFactor = 0.006655; break; //SBM20 My Calibration same as dividing count by 151
     //case 0: conversionFactor = 0.0057; break; //SBM20 People use this one usually, but i think it's not accurate. dividing by 151 is better.
     //case 0: conversionFactor = 0.006315; break; //SBM20 Alternative Value
     case 1: conversionFactor = 0.010000; break; //SI29BG
@@ -120,279 +98,138 @@ void setup() {
     case 9: conversionFactor = 0.006000; break; //SI1G
     default: break;
  } 
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-
- // Pin Setups (Buttons will be configured later)
- pinMode(buzzer, OUTPUT);
- pinMode(led, OUTPUT);
- pinMode(left_btn, INPUT);
- pinMode(mid_btn, INPUT);
- pinMode(right_btn, INPUT);
- pinMode(GEIGER_PIN, INPUT);
- attachInterrupt(digitalPinToInterrupt(GEIGER_PIN), IMPULSE, FALLING);
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-
- // PWM = 10% Output(9)
-  digitalWrite(13, HIGH);
-  TCCR1A = TCCR1A & 0xe0 | 3;
-  TCCR1B = TCCR1B & 0xe0 | 0x09; 
-  analogWrite(PWM,22);
-  
-  // More LCD Prints
-  lcd.setCursor(0,0);  
-  lcd.print("Software Updates:");
-  lcd.setCursor(0,1);  
-  lcd.print("github/xcibe95x");
-  delay(1000);
-  lcd.clear();
-
-  lcd.setCursor(0,0);
-  lcd.print(CPM);
-  lcd.print(stCPM);
-  lcd.setCursor(0,1);
-  lcd.print(outputSieverts(CPM));
-  lcd.print(mSv);
+     lcd.backlight();
+     lcd.setCursor(0,0);  
+     lcd.print("Geiger Counter");
+     lcd.setCursor(0,1);  
+     lcd.print("Battery ");
+     float BatteryLevel = (analogRead(Battery) * (5.0 / 1023));
+     lcd.print(BatteryLevel);
+     lcd.print("%");
+     delay(1500);
+     lcd.clear();
  
-} // Setup End
-
-// LOOP
+}
 
 void loop() {
 
- // Keep track of Arduino internal timer
- unsigned long currentMillis = millis();
+  // Check Battery Level and Turn On Warning Led if Low
+  // We must multiply by 5 to get the actual battery level
+  // Dividing is optional to get 3.70 instead of 3700 for Example
+  
+  float BatteryLevel = (analogRead(Battery)* 5.0) / 1023;
 
- // Conversions
- milliRoentgens = microSieverts/10; // 10 microsievert/hour = 1 milliroentgen/hour
- milliSieverts = microSieverts/1000; // 1 microsievert/hour = 0.001 millisievert/hour
+  
+  if (BatteryLevel <= 3.0) {
+      digitalWrite(BatteryLed, 1);
+   } else {
+      digitalWrite(BatteryLed, 0);
+   }
 
- // Update CPM Counter
-  if (currentMillis - previousMillis > LOG_PERIOD) {
-    previousMillis = currentMillis;
-    
-    CPM = counts * MINUTE_PERIOD / LOG_PERIOD;
+ // Switches Controls //
+
+
+ // Dose Rate Measure
+ if (digitalRead(SwDoseUnit) == 0) {
+     lcd.setCursor(0,1);
+     lcd.print(outputSieverts(countPerMinute));
+     lcd.print(" ");
+     lcd.print("\344Sv/hr ");
+ } else {
+     lcd.setCursor(0,1);
+     lcd.print(outputSieverts(countPerMinute) * pow(10, 2));
+     lcd.print(" ");
+     lcd.print("mR/hr ");
+ }
+
+   
+   // Display Dose Rate
+  if (digitalRead(SwCPM) == 1 && digitalRead(SwCPS) == 1) {
+     lcd.setCursor(0,0);  
+     lcd.print("Average CPM");
+     lcd.print(" ");
+     lcd.print(avgFinal);
+     lcd.print("    ");
+  } else {
+ // Display Dose Rate
+  if (digitalRead(SwCPS) == 1) {
+     lcd.setCursor(0,0);  
+     lcd.print("Count/Sec");
+     lcd.print(" ");
+     lcd.print(countPerSecond);
+     lcd.print("    ");
+  }
+
+   // Display Dose Rate
+  if (digitalRead(SwCPM) == 1) {
+     lcd.setCursor(0,0);  
+     lcd.print("Count/Min");
+     lcd.print(" ");
+     lcd.print(countPerMinute);
+     lcd.print("    ");
+  }
+  
+}
  
-    lcd.clear();
-    
-    lcd.setCursor(0,0);
-    lcd.print(CPM);
-    lcd.print(stCPM);
-    lcd.setCursor(0,1);
-    lcd.print(outputSieverts(CPM));
-    lcd.print(mSv);
-       
-    counts = 0;
-    
-  } 
-
-  // This is a fix for Indicators as they won't get enough current otherwise
-  if (trigger == 1){
-    digitalWrite(led, HIGH);
-    digitalWrite(buzzer, HIGH); // buzzer ON
-    trigger = 0;
+ // Backlight Control
+  if (digitalRead(SwBgLight) == 1) {
+    lcd.noBacklight(); 
+    }
+  else {
+ 
+    if (BatteryLevel <= 3.0 && (!Serial)){
+    lcd.noDisplay();
+    lcd.noBacklight();
+  } else {
+    lcd.display();
+    lcd.backlight();
   }
-  else
-  {
-    digitalWrite(led, LOW);
-    digitalWrite(buzzer, LOW); // buzzer OFF
-}
-
    
-/////////////////////////////////////////////////ICON INDICATORS//////////////////////////////////////
+  }
 
-  batterylevel(15,0);
-  usbplug(14,0);
-  
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+ // Check if the log period has passed and show dose rate.
+  if ((millis()) - timePreviousLog > LOG_PERIOD){ 
+    countPerSecond = count * 1000 / LOG_PERIOD;
+    countPerMinute = count * 60000 / LOG_PERIOD;
+    timePreviousLog = millis(); //Update measurement time.
+    count = 0;
+    lcd.clear(); // Refresh LCD
+    
+    readIndex++;
 
-} // Loop End
+  if (readIndex < 5) {
+   avgTotal += countPerMinute; 
+  }
+ 
+  if (readIndex >= 5) {
+  avgFinal = avgTotal / 5;
+  avgTotal = countPerMinute;
+  readIndex = 0;
+  }
+ }
 
 
-// Draw battery level in position x,y
-void batterylevel(int xpos,int ypos)
-{
-   double analog_value = analogRead(volt);
 
-  //read the value and convert it volt
-   float curvolt = ( analog_value * 5.0) / 1024;
-   
-  // check if voltge is bigger than 4.2 volt so this is a power source
-  if(curvolt > 4.0)
-  {
-    byte batlevel[8] = {
-    B01110,
-    B11111,
-    B11111,
-    B10101,
-    B10001,
-    B11011,
-    B11011,
-    B11111,
-    };
-    lcd.createChar(0 , batlevel);
-    lcd.setCursor(xpos,ypos);
-    lcd.write(byte(0));
-  }
-  if(curvolt <= 4.0 && curvolt > 3.8)
-  {
-    byte batlevel[8] = {
-    B01110,
-    B11111,
-    B11111,
-    B11111,
-    B11111,
-    B11111,
-    B11111,
-    B11111,
-    };
-    lcd.createChar(0 , batlevel);
-    lcd.setCursor(xpos,ypos);
-    lcd.write(byte(0));
-  }
-  if(curvolt <= 3.8 && curvolt > 3.7)
-  {
-    byte batlevel[8] = {
-    B01110,
-    B10001,
-    B11111,
-    B11111,
-    B11111,
-    B11111,
-    B11111,
-    B11111,
-    };
-    lcd.createChar(0 , batlevel);
-    lcd.setCursor(xpos,ypos);
-    lcd.write(byte(0));
-  }
-  if(curvolt <= 3.7 && curvolt > 3.6)
-  {
-    byte batlevel[8] = {
-    B01110,
-    B10001,
-    B10001,
-    B11111,
-    B11111,
-    B11111,
-    B11111,
-    B11111,
-    };
-    lcd.createChar(0 , batlevel);
-    lcd.setCursor(xpos,ypos);
-    lcd.write(byte(0));
-  }
-  if(curvolt <= 3.6 && curvolt > 3.4)
-  {
-    byte batlevel[8] = {
-    B01110,
-    B10001,
-    B10001,
-    B10001,
-    B11111,
-    B11111,
-    B11111,
-    B11111,
-    };
-    lcd.createChar(0 , batlevel);
-    lcd.setCursor(xpos,ypos);
-    lcd.write(byte(0));
-  }
-  if(curvolt <= 3.4 && curvolt > 3.2)
-  {
-    byte batlevel[8] = {
-    B01110,
-    B10001,
-    B10001,
-    B10001,
-    B10001,
-    B11111,
-    B11111,
-    B11111,
-    };
-    lcd.createChar(0 , batlevel);
-    lcd.setCursor(xpos,ypos);
-    lcd.write(byte(0));
-  }
-  if(curvolt <= 3.2 && curvolt > 3.0)
-  {
-    byte batlevel[8] = {
-    B01110,
-    B10001,
-    B10001,
-    B10001,
-    B10001,
-    B10001,
-    B11111,
-    B11111,
-    };
-    lcd.createChar(0 , batlevel);
-    lcd.setCursor(xpos,ypos);
-    lcd.write(byte(0));
-  }
-  if(curvolt < 3.0)
-  {
-    byte batlevel[8] = {
-    B01110,
-    B10001,
-    B10001,
-    B10001,
-    B10001,
-    B10001,
-    B10001,
-    B11111,
-    };
-    lcd.createChar(0 , batlevel);
-    lcd.setCursor(xpos,ypos);
-    lcd.write(byte(0));
-  }
 }
 
-// Draw USB icon in position x,y
-void usbplug(int xpos,int ypos)
-{
+
+//ISR Interrupt Service Routine countPulse.
+void countPulse(){
+
+digitalWrite(Clicker, 1);
+interruptTime = millis(); //Set time for interrupt, check for bouncing.
+if (interruptTime - lastInterrupt > bouncePreventTime){
   
-   double USBvalue = analogRead(usbV);
-   float USB = ( USBvalue * 5.0) / 1024;
+digitalWrite(PulseLed, 1);
+//Detach Interrupt from input pin.
+detachInterrupt(digitalPinToInterrupt(gm_input));
+count++; //Add counts.
 
 
-// lcd.setCursor(10,1);
-// lcd.print(USB);
-  
-  if(USB > 4.0)
-    {
-    byte usbicon[8] = {
-  B00100,
-  B00101,
-  B10101,
-  B10111,
-  B11100,
-  B00100,
-  B01110,
-  B00100
-    };
-    lcd.createChar(1 , usbicon);
-    lcd.setCursor(xpos,ypos);
-    lcd.write(byte(1));
-  }
-   if(USB < 4.0)
-  {
-    byte usbicon[8] = {
-    B00000,
-    B00000,
-    B00000,
-    B00000,
-    B00000,
-    B00000,
-    B00000,
-    B00000,
-    };
-    lcd.createChar(1 , usbicon);
-    lcd.setCursor(xpos,ypos);
-    lcd.write(byte(1));
+//Reattach interrupt.
+attachInterrupt(digitalPinToInterrupt(gm_input),countPulse,FALLING);
+lastInterrupt = interruptTime; //Update last interrupt time.
+digitalWrite(Clicker, 0);
+digitalWrite(PulseLed, 0);
   }
 }
-                        
