@@ -1,4 +1,9 @@
-# Easy DIY Geiger Counter
+# DIY Geiger Counter
+
+ Are you sick of youtube tutorial promising you a Geiger Counter and then it sucks?, This repo is for you, i have spent hours of research, it might not be the best
+ But it works nicely, it just need some hardware re-engineering and maybe experts in Radiations can help improving the code.
+
+# 22/05/2022 - I KNOW, Still didn't update the rep with schematics and shit, Wait for it, is gonna happen, i'm working on releasing it along a youtube showcase video
 
 # 08-06-2021 - I'm bringing this project for my exams and the repository will be updated with some schematics and photos of the project, i've beeen running this challenge to get my self a geiger counter for a year now, and i'm pretty statisfied with the end result, after all the prototypes and tests, the version i was able to make and bring to my exams is the one which brings me the most statisfaction. So i will be proud to update this repository by the end of the month or a bit later with schematics and images.
 
